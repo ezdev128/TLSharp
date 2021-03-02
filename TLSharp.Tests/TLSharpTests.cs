@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Configuration;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
 using TLSharp.Core;
@@ -55,6 +55,18 @@ namespace TLSharp.Tests
         internal static Action<object> IsNotNullHanlder;
         internal static Action<bool> IsTrueHandler;
 
+        public static IConfiguration GetConfig()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(System.AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", 
+                    optional: true, 
+                    reloadOnChange: true);
+
+            return builder.Build();
+        }
+
+        
         protected void Init(Action<object> notNullHandler, Action<bool> trueHandler)
         {
             IsNotNullHanlder = notNullHandler;
@@ -79,43 +91,45 @@ namespace TLSharp.Tests
 
         private void GatherTestConfiguration()
         {
+            var settings = GetConfig();
+            
             string appConfigMsgWarning = "{0} not configured in app.config! Some tests may fail.";
 
-            ApiHash = ConfigurationManager.AppSettings[nameof(ApiHash)];
+            ApiHash = settings[nameof(ApiHash)];
             if (string.IsNullOrEmpty(ApiHash))
                 Debug.WriteLine(appConfigMsgWarning, nameof(ApiHash));
 
-            var apiId = ConfigurationManager.AppSettings[nameof(ApiId)];
+            var apiId = settings[nameof(ApiId)];
             if (string.IsNullOrEmpty(apiId))
                 Debug.WriteLine(appConfigMsgWarning, nameof(ApiId));
             else
                 ApiId = int.Parse(apiId);
 
-            NumberToAuthenticate = ConfigurationManager.AppSettings[nameof(NumberToAuthenticate)];
+            NumberToAuthenticate = settings[nameof(NumberToAuthenticate)];
             if (string.IsNullOrEmpty(NumberToAuthenticate))
                 Debug.WriteLine(appConfigMsgWarning, nameof(NumberToAuthenticate));
 
-            CodeToAuthenticate = ConfigurationManager.AppSettings[nameof(CodeToAuthenticate)];
+            CodeToAuthenticate = settings[nameof(CodeToAuthenticate)];
             if (string.IsNullOrEmpty(CodeToAuthenticate))
                 Debug.WriteLine(appConfigMsgWarning, nameof(CodeToAuthenticate));
 
-            PasswordToAuthenticate = ConfigurationManager.AppSettings[nameof(PasswordToAuthenticate)];
+            PasswordToAuthenticate = settings[nameof(PasswordToAuthenticate)];
             if (string.IsNullOrEmpty(PasswordToAuthenticate))
                 Debug.WriteLine(appConfigMsgWarning, nameof(PasswordToAuthenticate));
 
-            NotRegisteredNumberToSignUp = ConfigurationManager.AppSettings[nameof(NotRegisteredNumberToSignUp)];
+            NotRegisteredNumberToSignUp = settings[nameof(NotRegisteredNumberToSignUp)];
             if (string.IsNullOrEmpty(NotRegisteredNumberToSignUp))
                 Debug.WriteLine(appConfigMsgWarning, nameof(NotRegisteredNumberToSignUp));
 
-            UserNameToSendMessage = ConfigurationManager.AppSettings[nameof(UserNameToSendMessage)];
+            UserNameToSendMessage = settings[nameof(UserNameToSendMessage)];
             if (string.IsNullOrEmpty(UserNameToSendMessage))
                 Debug.WriteLine(appConfigMsgWarning, nameof(UserNameToSendMessage));
 
-            NumberToGetUserFull = ConfigurationManager.AppSettings[nameof(NumberToGetUserFull)];
+            NumberToGetUserFull = settings[nameof(NumberToGetUserFull)];
             if (string.IsNullOrEmpty(NumberToGetUserFull))
                 Debug.WriteLine(appConfigMsgWarning, nameof(NumberToGetUserFull));
 
-            NumberToAddToChat = ConfigurationManager.AppSettings[nameof(NumberToAddToChat)];
+            NumberToAddToChat = settings[nameof(NumberToAddToChat)];
             if (string.IsNullOrEmpty(NumberToAddToChat))
                 Debug.WriteLine(appConfigMsgWarning, nameof(NumberToAddToChat));
         }
@@ -157,7 +171,9 @@ namespace TLSharp.Tests
 
         public virtual async Task SendMessageTest()
         {
-            NumberToSendMessage = ConfigurationManager.AppSettings[nameof(NumberToSendMessage)];
+            var settings = GetConfig();
+            
+            NumberToSendMessage = settings[nameof(NumberToSendMessage)];
             if (string.IsNullOrWhiteSpace(NumberToSendMessage))
                 throw new Exception($"Please fill the '{nameof(NumberToSendMessage)}' setting in app.config file first");
 
@@ -343,7 +359,8 @@ namespace TLSharp.Tests
 
         public virtual async Task SendMessageByUserNameTest()
         {
-            UserNameToSendMessage = ConfigurationManager.AppSettings[nameof(UserNameToSendMessage)];
+            var settings = GetConfig();
+            UserNameToSendMessage = settings[nameof(UserNameToSendMessage)];
             if (string.IsNullOrWhiteSpace(UserNameToSendMessage))
                 throw new Exception($"Please fill the '{nameof(UserNameToSendMessage)}' setting in app.config file first");
 
