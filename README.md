@@ -1,4 +1,4 @@
-TLSharp
+TLSharp - !!!WARNING!!! Outdated info!
 -------------------------------
 
 ![Build status](https://github.com/sochix/TLSharp/workflows/CI/badge.svg?branch=master&event=push)
